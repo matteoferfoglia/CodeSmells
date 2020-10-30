@@ -1,3 +1,4 @@
+package codesmells;
 
 public class Tile
 {
