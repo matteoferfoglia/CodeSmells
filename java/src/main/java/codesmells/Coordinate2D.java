@@ -10,12 +10,10 @@ public class Coordinate2D {
     }
 
     @Override
-    public boolean equals(Object other) {
-        if(other instanceof Coordinate2D) {
-            Coordinate2D otherCoordinate = (Coordinate2D)other;
-            return otherCoordinate.x == x && otherCoordinate.y == y;
-        } else {
-            return false ;
-        }
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Coordinate2D)) return false;
+        Coordinate2D coordinate2D = (Coordinate2D) o;
+        return coordinate2D.x == x && coordinate2D.y == y;
     }
 }

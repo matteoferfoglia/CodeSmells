@@ -2,75 +2,53 @@ package codesmells;
 
 
 public class Game {
-    private char _lastSymbol = ' ';
-    private final Board _board = new Board();
+    private Player lastPlayer = Player.UNSPECIFIED;
+    private final Board board = new Board();
 
-    public void Play(char symbol, int x, int y) throws Exception{
-        Play(new Tile(new Coordinate2D(x,y), symbol));
-    }
-
-    public void Play(Tile tile) throws Exception {
-        //if first move
-        if (_lastSymbol == ' ') {
-            //if player is X
-            if (tile.getSymbol() == 'O') {
+    public void play(Tile tile) throws Exception {
+        if (isTheFirstMove(lastPlayer)) {
+            if (tile.getPlayer().equals(Player.CIRCLE)) {
                 throw new Exception("Invalid first player");
             }
-        }
-        //if not first move but player repeated
-        else if (tile.getSymbol() == _lastSymbol) {
+        } else if(tile.getPlayer().equals(lastPlayer)) {
             throw new Exception("Invalid next player");
         }
-        //if not first move but play on an already played tile
-        else if (_board.TileAt(tile.getCoordinate2D()).getSymbol() != ' ') {
+        else if (board.TileAt(tile.getCoordinate2D()).isAlreadyPlayed()) {
             throw new Exception("Invalid position");
         }
 
-        // update game state
-        _lastSymbol = tile.getSymbol();
-        _board.AddTile(tile);
+        updateGameState(tile);
+    }
+
+    private void updateGameState(Tile whatTileHasJustBeenPlayed){
+        lastPlayer = whatTileHasJustBeenPlayed.getPlayer();
+        board.addTile(whatTileHasJustBeenPlayed);
+    }
+
+    private boolean isTheFirstMove(Player p){
+        return p.equals(Player.UNSPECIFIED);
+    }
+
+    public void play(char symbol, int x, int y) throws Exception{
+        //Point of failure: this method is here for backward compatibility with tests
+        play(new Tile(new Coordinate2D(x,y), Player.fromChar(symbol)));
     }
 
     public char Winner() {
-        //if the positions in first row are taken
-        if (_board.TileAt(new Coordinate2D(0,0)).getSymbol() != ' ' &&
-                _board.TileAt(new Coordinate2D(0,1)).getSymbol() != ' ' &&
-                _board.TileAt(new Coordinate2D(0,2)).getSymbol() != ' ') {
-            //if first row is full with same symbol
-            if (_board.TileAt(new Coordinate2D(0,0)).getSymbol() ==
-                    _board.TileAt(new Coordinate2D(0,1)).getSymbol() &&
-                    _board.TileAt(new Coordinate2D(0,2)).getSymbol() == _board.TileAt(new Coordinate2D(0,1)).getSymbol()) {
-                return _board.TileAt(new Coordinate2D(0,0)).getSymbol();
-            }
+
+        Player winnerPlayer = Player.UNSPECIFIED;
+
+        if (board.isTheRowEntirelyPlayedByTheSamePlayer(Board.Row.FIRST)) {
+            winnerPlayer = board.TileAt(new Coordinate2D(0,0)).getPlayer();
+        }
+        if (board.isTheRowEntirelyPlayedByTheSamePlayer(Board.Row.SECOND)) {
+            winnerPlayer = board.TileAt(new Coordinate2D(1,0)).getPlayer();
+        }
+        if (board.isTheRowEntirelyPlayedByTheSamePlayer(Board.Row.THIRD)) {
+            winnerPlayer = board.TileAt(new Coordinate2D(2,0)).getPlayer();
         }
 
-        //if the positions in first row are taken
-        if (_board.TileAt(new Coordinate2D(1,0)).getSymbol() != ' ' &&
-                _board.TileAt(new Coordinate2D(1,1)).getSymbol() != ' ' &&
-                _board.TileAt(new Coordinate2D(1,2)).getSymbol() != ' ') {
-            //if middle row is full with same symbol
-            if (_board.TileAt(new Coordinate2D(1,0)).getSymbol() ==
-                    _board.TileAt(new Coordinate2D(1,1)).getSymbol() &&
-                    _board.TileAt(new Coordinate2D(1,2)).getSymbol() ==
-                            _board.TileAt(new Coordinate2D(1,1)).getSymbol()) {
-                return _board.TileAt(new Coordinate2D(1,0)).getSymbol();
-            }
-        }
-
-        //if the positions in first row are taken
-        if (_board.TileAt(new Coordinate2D(2,0)).getSymbol() != ' ' &&
-                _board.TileAt(new Coordinate2D(2,1)).getSymbol() != ' ' &&
-                _board.TileAt(new Coordinate2D(2,2)).getSymbol() != ' ') {
-            //if middle row is full with same symbol
-            if (_board.TileAt(new Coordinate2D(2,0)).getSymbol() ==
-                    _board.TileAt(new Coordinate2D(2,1)).getSymbol() &&
-                    _board.TileAt(new Coordinate2D(2,2)).getSymbol() ==
-                            _board.TileAt(new Coordinate2D(2,1)).getSymbol()) {
-                return _board.TileAt(new Coordinate2D(2,0)).getSymbol();
-            }
-        }
-
-        return ' ';
+        return winnerPlayer.toChar();
     }
 }
 

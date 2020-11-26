@@ -2,22 +2,30 @@ package codesmells;
 
 public class Tile {
     private final Coordinate2D coordinate2D;
-    private char symbol;
+    private Player player;
 
-    public Tile(Coordinate2D coord, char symbol) {
+    public Tile(Coordinate2D coord, Player player) {
         this.coordinate2D = coord;
-        this.symbol = symbol;
+        this.player = player;
     }
 
     public Coordinate2D getCoordinate2D() {
         return coordinate2D;
     }
 
-    public char getSymbol() {
-        return symbol;
+    public Player getPlayer() {
+        return player;
     }
 
-    public void setSymbol(char symbol) {
-        this.symbol = symbol;
+    public void setPlayer(Player player) {
+        this.player = player;
+    }
+
+    public boolean isAlreadyPlayed() {
+        return !player.equals(Player.UNSPECIFIED);
+    }
+
+    public boolean samePlayerOf(Tile t2) {
+        return player.equals(t2.player);
     }
 }
