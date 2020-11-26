@@ -28,4 +28,22 @@ public class Tile {
     public boolean samePlayerOf(Tile t2) {
         return player.equals(t2.player);
     }
+
+    public static class Coordinate2D {
+        private final int x;
+        private final int y;
+
+        public Coordinate2D(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof Coordinate2D)) return false;
+            Coordinate2D coordinate2D = (Coordinate2D) o;
+            return coordinate2D.x == x && coordinate2D.y == y;
+        }
+    }
 }
